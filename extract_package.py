@@ -13,11 +13,11 @@ if len(sys.argv) < 3:
 if path.isdir(sys.argv[2]) or not path.exists(sys.argv[2]):
     pkgname = sys.argv[1]
     target = sys.argv[2]
-    lst = p.stdout.readlines()
 
-    if not lst:
-        print p.stderr.readline()
+    if not check_packagename(pkgname):
         p = Popen(['apt-cache', '--installed', 'search', pkgname], stdout=PIPE)
+        print '** Package not found **'
+        print
         print 'apt-cache search result:'
         print p.stdout.read()
         sys.exit(2)
