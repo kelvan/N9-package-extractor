@@ -41,7 +41,7 @@ def generate_aegis(pkgname, target):
     """
     raise NotImplementedError()
 
-def make_package(target):
+def build_package(target):
     """ make package from target folder
     """
     Popen(['dpkg-deb', '-b', target], stdout=PIPE, stderr=PIPE)

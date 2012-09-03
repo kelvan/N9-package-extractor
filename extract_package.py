@@ -4,56 +4,38 @@ from os import mkdir, chdir, path, listdir
 import sys
 from shutil import copy2 as cp
 from subprocess import Popen, PIPE
+from utils import *
 
-scriptpath = '/var/lib/dpkg/info/'
+if len(sys.argv) < 3:
+    print 'Usage: %s pkgname target' % sys.argv[0]
+    sys.exit(1)
 
-if path.isdir(sys.argv[1]) or not path.exists(sys.argv[1]):
-    package = sys.argv[1]
-    target = package
-    p = Popen(['dpkg', '--listfiles', package], stdout=PIPE, stderr=PIPE)
-    lst = p.stdout.read().split()
+if path.isdir(sys.argv[2]) or not path.exists(sys.argv[2]):
+    pkgname = sys.argv[1]
+    target = sys.argv[2]
+    lst = p.stdout.readlines()
 
     if not lst:
         print p.stderr.readline()
-        p = Popen(['apt-cache', '--installed', 'search', package], stdout=PIPE)
+        p = Popen(['apt-cache', '--installed', 'search', pkgname], stdout=PIPE)
         print 'apt-cache search result:'
         print p.stdout.read()
-        sys.exit(0)
+        sys.exit(2)
 else:
-    target = path.splitext(path.basename(sys.argv[1]))[0]
-    with open(sys.argv[1], 'r') as f:
-        lst = f.read().split()
+    print 'invalid target'
+    sys.exit(3)
 
 if not path.exists(target):
     mkdir(target)
-chdir(target)
 
-for fn in lst:
-    if path.exists(fn):
-        if path.isdir(fn):
-            if not path.exists(fn[1:]):
-                mkdir(fn[1:])
-        else:
-            try:
-                cp(fn, fn[1:])
-            except OSError as e:
-                print e
-            except IOError as e:
-                print e
-    else:
-        print 'path not found: %s' % fn
+print 'Copying data'
+copy_data(pkgname, target)
 
-dpkgpath = 'dpkg_info'
-if not path.exists(dpkgpath):
-    mkdir(dpkgpath)
-    
-for fn in filter(lambda x: x.startswith(package), listdir(scriptpath)):
-    try:
-        cp(path.join(scriptpath, fn), dpkgpath)
-    except OSError as e:
-        print e
-    except IOError as e:
-        print e
+print 'Generating aegis token'
+generate_aegis(pkgname, target)
+
+print 'Building package'
+build_package(target)
 
 p = Popen(['du', '-sh', '.'], stdout=PIPE)
 print '%s copied' % p.stdout.readline().split()[0]
