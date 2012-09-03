@@ -32,7 +32,7 @@ print 'Copying data'
 copy_data(pkgname, target)
 
 print 'Generating aegis token'
-generate_aegis(pkgname, target)
+#generate_aegis(pkgname, target)
 
 print 'Building package'
 build_package(target)

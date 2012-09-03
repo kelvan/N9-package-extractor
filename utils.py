@@ -12,12 +12,13 @@ def copy_data(pkgname, target):
     lst = p.stdout.readlines()
     
     for fn in lst:
+        fn = fn.strip()
         if path.exists(fn):
             # file/folder of package exist
             if path.isdir(fn):
                 if not path.exists(path.join(target, fn[1:])):
                     # create target folder if necessary
-                    mkdir(path.join(target,fn[1:]))
+                    mkdir(path.join(target, fn[1:]))
             else:
                 try:
                     cp(fn, path.join(target, fn[1:]))
@@ -27,10 +28,13 @@ def copy_data(pkgname, target):
                     print e
         else:
             print 'path not found: %s' % fn
-            
+    
+    if not path.exists(path.join(target, script_folder)):
+        mkdir(path.join(target, script_folder))
+    
     for fn in filter(lambda x: x.startswith(pkgname), listdir(dpkg_info)):
         try:
-            cp(path.join(dpkg_info, fn), path.join(target, script_folder))
+            cp(path.join(dpkg_info, fn), path.join(target, script_folder, fn))
         except OSError as e:
             print e
         except IOError as e:
@@ -44,11 +48,11 @@ def generate_aegis(pkgname, target):
 def build_package(target):
     """ make package from target folder
     """
-    Popen(['dpkg-deb', '-b', target], stdout=PIPE, stderr=PIPE)
+    p = Popen(['dpkg-deb', '-b', target], stdout=PIPE, stderr=PIPE)
     stderr = p.stderr.read()
     
     if stderr:
-        raise IOError(stdterr)
+        raise IOError(stderr)
     else:
         return True
 
