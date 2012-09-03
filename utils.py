@@ -1,9 +1,20 @@
 from os import mkdir, path, chdir, listdir
 from shutil import copy2 as cp
 from subprocess import Popen, PIPE
+import re
 
 dpkg_info = '/var/lib/dpkg/info/'
+dpkg_status = '/var/lib/dpkg/status'
 script_folder = 'DEBIAN'
+r = r'.*?(Package: %s.*?\n\n).*'
+
+def _extract_control(pkgname):
+    with open(dpkg_status, 'r') as f:
+        rg = re.compile(r % pkgname, re.MULTILINE|re.DOTALL)
+        control = rg.match(f.read()).groups()[0]
+    
+    cs = control.split('\n')
+    return '\n'.join(cs[:1] + cs[2:])
 
 def copy_data(pkgname, target):
     """ Copy files of package to target folder
@@ -39,6 +50,10 @@ def copy_data(pkgname, target):
             print e
         except IOError as e:
             print e
+
+    # copy control information
+    with open(path.join(target, script_folder, 'control'), 'w') as f:
+        f.write(_extract_control(pkgname))
 
 def generate_aegis(pkgname, target):
     """ generates aegis token for package and saves it to target folder
