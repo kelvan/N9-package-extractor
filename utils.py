@@ -14,7 +14,18 @@ def _extract_control(pkgname):
         control = rg.match(f.read()).groups()[0]
     
     cs = control.split('\n')
-    return '\n'.join(cs[:1] + cs[2:])
+    allowed_fields = ['Package', 'Source', 'Version', 'Section',
+                      'Priority', 'Architecture', 'Essential',
+                      'Depends', 'Recommends', 'Suggests', 'Enhances',
+                      'Pre-Depends', 'Installed-Size', 'Maintainer',
+                      'Description', 'Homepage']
+    c = ''
+    
+    for l in cs:
+        if l.split(':')[0] in allowed_fields:
+            c += l + '\n'
+    
+    return c + '\n'
 
 def copy_data(pkgname, target):
     """ Copy files of package to target folder

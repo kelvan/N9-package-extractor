@@ -36,6 +36,3 @@ print 'Generating aegis token'
 
 print 'Building package'
 build_package(target)
-
-p = Popen(['du', '-sh', '.'], stdout=PIPE)
-print '%s copied' % p.stdout.readline().split()[0]
