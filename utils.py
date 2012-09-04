@@ -56,7 +56,8 @@ def copy_data(pkgname, target):
     
     for fn in filter(lambda x: x.startswith(pkgname), listdir(dpkg_info)):
         try:
-            cp(path.join(dpkg_info, fn), path.join(target, script_folder, fn))
+            if not fn.endswith('.list'):
+                cp(path.join(dpkg_info, fn), path.join(target, script_folder, fn.split('.')[1]))
         except OSError as e:
             print e
         except IOError as e:
