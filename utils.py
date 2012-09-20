@@ -84,7 +84,4 @@ def build_package(target):
         return True
 
 def check_packagename(pkgname):
-    p = Popen(['dpkg', '--status', pkgname], stdout=PIPE, stderr=PIPE)
-    stdout = p.stdout.readlines()
-    
-    return len(stdout) > 0
+    return path.exists(path.join('/var/lib/dpkg/info/', pkgname + '.list'))
