@@ -30,8 +30,9 @@ def _extract_control(pkgname):
 def copy_data(pkgname, target):
     """ Copy files of package to target folder
     """
-    p = Popen(['dpkg', '--listfiles', pkgname], stdout=PIPE, stderr=PIPE)
-    lst = p.stdout.readlines()
+      
+    with open(path.join('/var/lib/dpkg/info/', pkgname + '.list')) as f:
+        lst = f.readlines()
     
     for fn in lst:
         fn = fn.strip()
