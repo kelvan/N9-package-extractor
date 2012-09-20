@@ -28,11 +28,16 @@ else:
 if not path.exists(target):
     mkdir(target)
 
+build_target = path.join(target, pkgname)
+
+if not path.exists(build_target):
+    mkdir(build_target)
+    
 print 'Copying data'
-copy_data(pkgname, target)
+copy_data(pkgname, build_target)
 
 print 'Building package'
-build_package(target)
+build_package(build_target, target)
 
 print 'Generating aegis token'
-#generate_aegis(pkgname, target)
+generate_aegis(pkgname, target)
