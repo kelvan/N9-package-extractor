@@ -3,9 +3,10 @@ from shutil import copy2 as cp
 from subprocess import Popen, PIPE
 import re
 
-dpkg_info = '/var/lib/dpkg/info/'
-dpkg_status = '/var/lib/dpkg/status'
-aegis_isjawurscht = '/var/lib/aegis/restok/restok.conf'
+base_path = '/'
+dpkg_info = os.path.join(base_path, '/var/lib/dpkg/info/')
+dpkg_status = os.path.join(base_path, '/var/lib/dpkg/status')
+aegis_isjawurscht = os.path.join(base_path, '/var/lib/aegis/restok/restok.conf')
 script_folder = 'DEBIAN'
 aegis_tokenr = r'(\w+:\n?(\s[\w.:/-]+\n)+)'
 r = r'.*?(Package: %s.*?\n\n).*'
@@ -33,7 +34,7 @@ def copy_data(pkgname, target):
     """ Copy files of package to target folder
     """
       
-    with open(path.join('/var/lib/dpkg/info/', pkgname + '.list')) as f:
+    with open(path.join(dpkg_info, pkgname + '.list')) as f:
         lst = f.readlines()
     
     for fn in lst:
@@ -121,7 +122,7 @@ def build_package(basefolder, target):
         return True
 
 def check_packagename(pkgname):
-    return path.exists(path.join('/var/lib/dpkg/info/', pkgname + '.list'))
+    return path.exists(path.join(dpkg_info, pkgname + '.list'))
     
 def append_aegismanifest(archive, aegismanifest):
     """ implementation of 'ar q $archive $file'
